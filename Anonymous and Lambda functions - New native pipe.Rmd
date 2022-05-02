@@ -1,0 +1,54 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+An **anonymous function** is a function definition that is created and used, but never assigned to a variable or identifier. These operate on an input without storing the function in memory. Everything needed for a function definition are the **formal arguments** and a **body**, not being assigned to a variable. Base R is capable of handling anonymous functions as well as other CRAN packages. The `purrr` package uses the `rlang` package to help define anonymous functions in a very brief way from a user-specified, one-sided formula.
+
+```{r}
+
+# Base R anonymous functions
+(function(x) x/2 + 1000)(1:15)
+
+(function(x) paste(x, 'is awesome!'))(c("Giancarlo", "Piero", "Kira", "Rocco"))
+
+(function(x) lm(mpg ~ cyl, data = x))(mtcars)
+
+mtcars |> (function(x) lm(mpg ~ cyl, data = x))()
+
+# purrr's anonymous function syntax (rlang package)
+map_int(1:15, ~ .x + 1L)
+
+```
+
+***Lambda functions?*** They are a shorthand of writing anonymous functions in many programming languages.
+
+```{r}
+
+# Lambda functions
+(\(x) x/2 + 1000)(1:15)
+
+(\(x) paste(x, "is awesome!"))(c("Giancarlo", "Piero", "Kira", "Rocco"))
+
+(\(x) lm(mpg ~ cyl, data = x))(mtcars)
+
+```
+
+***New native pipe in R!*** As of R 4.1.0 there´s a new **native pipeline** `|>`. Although it is much faster thane the original `magrittr` pipeline `%>%` the native one has one drawback: it will always pipe into the ***first unnamed argument*** of the proceeding function. It will not accept the `.` syntax to allow piping into any argument. The only way that the native pipe can work in the same way as the original pipe is to write a function where the required argument becomes the **first** (or only) unnamed argument.
+
+```{r}
+
+mtcars |> (\(x) lm(mpg ~ cyl, data = x))()
+
+mtcars |> as_tibble() |> slice_sample(n = 25) |> (\(x) lm(formula = mpg ~ disp, data = x))()
+
+33:39 |> (function(x) x + 88 * 10)()
+
+```
+
+With R version 4.2.0 there's a new **place holder** for the native pipe
+
+```{r}
+
+
+```
